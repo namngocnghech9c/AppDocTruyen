@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40sp"
+        android:layout_margin="@dimen/_10sdp"
+        android:background="@drawable/bg_edt_search"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+        <EditText
+            android:id="@+id/edtSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:drawableLeft="@drawable/search_24"
+            android:drawablePadding="@dimen/_3sdp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Search"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:padding="@dimen/_3sdp"
+            android:singleLine="true"
+            android:textColorHint="@color/blue_EBEBF5_60" />
+    </LinearLayout>
+
+    <Button
+        android:backgroundTint="#0E1959"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_200sdp"
+        android:text="Lọc" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/id_recyclerView_home"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@+id/not_use_txt4" />
+</LinearLayout>
