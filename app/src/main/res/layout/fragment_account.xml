@@ -12,7 +12,7 @@
         android:layout_height="200dp"
         android:layout_margin="@dimen/_10sdp"
         android:background="@drawable/bg_info2"
-        android:gravity="center||top"
+        android:gravity="center"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
