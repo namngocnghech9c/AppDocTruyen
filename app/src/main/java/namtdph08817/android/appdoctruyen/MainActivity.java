@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private TabLayout tabLayout;
     private AdapterViewpager adapter;
+    public static final String mURL = APIClass.URL_1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
