@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/tv_item_tenChapter"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="tenchap"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:textSize="@dimen/_15sdp"
+        android:textColor="@color/bg_button"/>
+</androidx.cardview.widget.CardView>

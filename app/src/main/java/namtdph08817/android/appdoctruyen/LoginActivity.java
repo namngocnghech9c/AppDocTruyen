@@ -83,13 +83,18 @@ public class LoginActivity extends AppCompatActivity {
                 if (ed_username.getText().length() == 0 || ed_pass.getText().length() == 0) {
                     Toast.makeText(LoginActivity.this, "Không được để trống username và password", Toast.LENGTH_SHORT).show();
                 } else {
-                    String user = "", pass = "";
+                    String user = "", pass = "", fullname = "", avatar="", sdt="", email ="", _id="";
                     for (int i = 0; i < arrayList.size(); i++) {
                         UserModel model = arrayList.get(i);
 
                         if (ed_username.getText().toString().equals(model.getUsername()) && ed_pass.getText().toString().equals(model.getPasswd())) {
                             user = model.getUsername();
                             pass = model.getPasswd();
+                            fullname = model.getFullname();
+                            avatar = model.getAvatar();
+                            _id = model.get_id();
+                            sdt = model.getSdt();
+                            email = model.getEmail();
                         }
                     }
 
@@ -101,13 +106,18 @@ public class LoginActivity extends AppCompatActivity {
                         if (chkRemember.isChecked()){
                             editor.putString("username",user);
                             editor.putString("passwd",pass);
+                            editor.putString("fullname",fullname);
+                            editor.putString("avatar",avatar);
+                            editor.putString("email",email);
+                            editor.putString("sdt",sdt);
+                            editor.putString("_id",_id);
                             editor.putBoolean("check_rmb",true);
 
                         }else {
                             editor.putBoolean("check_rmb",false);
                         }
                         editor.apply();
-
+                        finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "Tên đăng nhập hoặc mật khẩu không trùng khớp", Toast.LENGTH_SHORT).show();
                     }

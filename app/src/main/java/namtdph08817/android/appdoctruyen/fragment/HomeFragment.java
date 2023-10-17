@@ -1,5 +1,8 @@
 package namtdph08817.android.appdoctruyen.fragment;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import namtdph08817.android.appdoctruyen.APIClass;
+import namtdph08817.android.appdoctruyen.ChiTietChuyen;
 import namtdph08817.android.appdoctruyen.MainActivity;
 import namtdph08817.android.appdoctruyen.R;
 import namtdph08817.android.appdoctruyen.adapters.TruyenAdapter;
@@ -52,6 +56,7 @@ public class HomeFragment extends Fragment {
     private ProgressBar progressBar;
     private Spinner spinner;
     private Theloai_Interface theloai_interface;
+    private List<TruyenModel> list1;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -123,8 +128,8 @@ public class HomeFragment extends Fragment {
                     call.enqueue(new Callback<List<TruyenModel>>() {
                         @Override
                         public void onResponse(Call<List<TruyenModel>> call, Response<List<TruyenModel>> response) {
-                            List<TruyenModel> list = response.body();
-                            adapter = new TruyenAdapter((ArrayList<TruyenModel>) list, getContext());
+                            list1 = response.body();
+                            adapter = new TruyenAdapter((ArrayList<TruyenModel>) list1, getContext());
                             progressBar.setVisibility(View.VISIBLE);
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -165,7 +170,25 @@ public class HomeFragment extends Fragment {
 
             }
         });
-        //lấy ds truyen
+
+        //click item truyen
+        Gdview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TruyenModel model = list1.get(position);
+                SharedPreferences preferences = getContext().getSharedPreferences("Truyen.txt", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("_id",model.get_id());
+                editor.putString("nameTruyen",model.getNameTruyen());
+                editor.putString("nameTacgia",model.getNameTacgia());
+                editor.putInt("namXuatban",model.getNamXuatban());
+                editor.putString("anhBia",model.getAnhBia());
+                editor.putString("theLoai",model.getTheLoai());
+                editor.putString("mota",model.getMota());
+                editor.apply();
+                startActivity(new Intent(getActivity(), ChiTietChuyen.class));
+            }
+        });
 
 
     }
