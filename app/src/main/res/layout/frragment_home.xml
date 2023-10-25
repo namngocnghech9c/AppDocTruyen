@@ -45,15 +45,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="400dp">
+
         <GridView
             android:id="@+id/grdV_Truyen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:numColumns="3"
-            android:verticalSpacing="1dp"
+            android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:layout_centerHorizontal="true">
-        </GridView>
+            android:numColumns="3"
+            android:verticalSpacing="1dp"></GridView>
+
         <ProgressBar
             android:id="@+id/progress_truyen"
             android:layout_width="wrap_content"

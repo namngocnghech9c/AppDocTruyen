@@ -124,20 +124,16 @@ public class HomeFragment extends Fragment {
                 String tLoai = (String) parent.getItemAtPosition(position);
                 if (tLoai.equals("Tất cả")) {
                     //neu chon tat ca, lay ds tat ca truyen
+                    progressBar.setVisibility(View.VISIBLE);
                     Call<List<TruyenModel>> call = tInterface.getAllTruyen();
                     call.enqueue(new Callback<List<TruyenModel>>() {
                         @Override
                         public void onResponse(Call<List<TruyenModel>> call, Response<List<TruyenModel>> response) {
                             list1 = response.body();
                             adapter = new TruyenAdapter((ArrayList<TruyenModel>) list1, getContext());
-                            progressBar.setVisibility(View.VISIBLE);
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Gdview.setAdapter(adapter);
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                }
-                            }, 500);
+                            Gdview.setAdapter(adapter);
+                            progressBar.setVisibility(View.INVISIBLE);
+
                         }
                         @Override
                         public void onFailure(Call<List<TruyenModel>> call, Throwable t) {
@@ -159,7 +155,7 @@ public class HomeFragment extends Fragment {
 
                         @Override
                         public void onFailure(Call<List<TruyenModel>> call, Throwable t) {
-                            Log.e("log ne", "loi lay ds truyen: " + t.toString());
+                            Log.e("onFailure", "loi lay ds truyen: " + t.toString());
                         }
                     });
                 }

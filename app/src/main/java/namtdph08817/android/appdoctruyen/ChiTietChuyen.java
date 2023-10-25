@@ -26,11 +26,14 @@ import java.util.List;
 
 import namtdph08817.android.appdoctruyen.adapters.BinhLuanAdapter;
 import namtdph08817.android.appdoctruyen.adapters.ChaptersAdapter;
+import namtdph08817.android.appdoctruyen.fragment.FavoriteFragment;
 import namtdph08817.android.appdoctruyen.mInterface.BinhLuan_Interface;
 import namtdph08817.android.appdoctruyen.mInterface.Chapter_Interface;
+import namtdph08817.android.appdoctruyen.mInterface.DataListener;
 import namtdph08817.android.appdoctruyen.mInterface.Favorite_Interface;
 import namtdph08817.android.appdoctruyen.mInterface.Next_Interface;
 import namtdph08817.android.appdoctruyen.models.BinhLuanModel;
+import namtdph08817.android.appdoctruyen.models.ChapterID;
 import namtdph08817.android.appdoctruyen.models.ChapterModel;
 import namtdph08817.android.appdoctruyen.models.FavoriteModel;
 import namtdph08817.android.appdoctruyen.models.TruyenModel;
@@ -40,45 +43,63 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ChiTietChuyen extends AppCompatActivity {
+public class ChiTietChuyen extends AppCompatActivity implements DataListener {
     private ChaptersAdapter chaptersAdapter;
     private BinhLuanAdapter cmtAdapter;
     private Chapter_Interface chapInterface;
     private BinhLuan_Interface cmtInterface;
     private Favorite_Interface ytInterface;
     private TextView tv_nameTruyen, tv_nameTacgia, tv_theloai, tv_mota, tv_namXB;
-    private RecyclerView cmtRecyclerView,chapRecyclerView;
+    private RecyclerView cmtRecyclerView, chapRecyclerView;
     private ImageView img_anhBia, img_send;
     private EditText ed_cmt;
     private ToggleButton btn_toggle;
+    private String idTruyen;
+    private boolean check = false;
+    public static ArrayList<ChapterID> arrListID = new ArrayList<>();
+    private static List<String> listTruyenID = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chi_tiet_chuyen);
         anhxa();
 
-
+        //
+        FavoriteFragment fragment = FavoriteFragment.newInstance();
+        fragment.setDataListener(this);
+        fragment.sendDataToListeners();
 
         //lay thoi gian hien tai
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String time = sdf.format(new Date());
+
         //lay du lieu truyen
         SharedPreferences preferences = getApplicationContext().getSharedPreferences("Truyen.txt", Context.MODE_PRIVATE);
-        String idTruyen = preferences.getString("_id","");
-        String nameTruyen = preferences.getString("nameTruyen","");
-        String nameTacgia = preferences.getString("nameTacgia","");
-        int namXuatban = preferences.getInt("namXuatban",0);
-        String anhBia = preferences.getString("anhBia","");
-        String theLoai = preferences.getString("theLoai","");
-        String mota = preferences.getString("mota","");
+        idTruyen = preferences.getString("_id", "");
+        String nameTruyen = preferences.getString("nameTruyen", "");
+        String nameTacgia = preferences.getString("nameTacgia", "");
+        int namXuatban = preferences.getInt("namXuatban", 0);
+        String anhBia = preferences.getString("anhBia", "");
+        String theLoai = preferences.getString("theLoai", "");
+        String mota = preferences.getString("mota", "");
+        TruyenModel truyenModel = new TruyenModel();
+        truyenModel.set_id(idTruyen);
+        truyenModel.setNameTruyen(nameTruyen);
+        truyenModel.setNameTacgia(nameTacgia);
+        truyenModel.setNamXuatban(namXuatban);
+        truyenModel.setAnhBia(anhBia);
+        truyenModel.setTheLoai(theLoai);
+        truyenModel.setMota(mota);
         //set du lieu tv
         tv_nameTruyen.setText(nameTruyen);
-        tv_nameTacgia.setText("Tên tác giả : "+nameTacgia);
-        tv_theloai.setText("Thể loại : "+theLoai);
-        tv_namXB.setText("Năm xuất bản : "+namXuatban);
-        tv_mota.setText("Mô tả : "+mota);
+        tv_nameTacgia.setText("Tên tác giả : " + nameTacgia);
+        tv_theloai.setText("Thể loại : " + theLoai);
+        tv_namXB.setText("Năm xuất bản : " + namXuatban);
+        tv_mota.setText("Mô tả : " + mota);
         //set anh
-        Glide.with(this).load(APIClass.URL_1+"uploads/"+anhBia).placeholder(R.drawable.logo).into(img_anhBia);
+        Glide.with(this).load(APIClass.URL_1 + "uploads/" + anhBia).placeholder(R.drawable.logo).into(img_anhBia);
+
 
         //retrofit
         Retrofit retrofit = new Retrofit.Builder()
@@ -96,17 +117,8 @@ public class ChiTietChuyen extends AppCompatActivity {
                 List<ChapterModel> list = response.body();
                 chaptersAdapter = new ChaptersAdapter(getApplicationContext(), new Next_Interface() {
                     @Override
-                    public void nextActivity(ChapterModel model) {
+                    public void nextActivity() {
                         startActivity(new Intent(ChiTietChuyen.this, NoiDungTruyenActivity.class));
-                    }
-                });
-                chaptersAdapter.setChapterClickListener(new Next_Interface() {
-                    @Override
-                    public void nextActivity(ChapterModel model) {
-                        Intent intent = new Intent(ChiTietChuyen.this, NoiDungTruyenActivity.class);
-                        intent.putExtra("tenChap", model.getTenChap());
-                        intent.putExtra("noiDung", model.getNoiDung());
-                        startActivity(intent);
                     }
                 });
                 chaptersAdapter.setData((ArrayList<ChapterModel>) list);
@@ -114,6 +126,10 @@ public class ChiTietChuyen extends AppCompatActivity {
                         LinearLayoutManager.VERTICAL, false);
                 chapRecyclerView.setLayoutManager(manager);
                 chapRecyclerView.setAdapter(chaptersAdapter);
+                int nextID = 1;
+                for (ChapterModel chapterModel : list) {
+                    arrListID.add(new ChapterID(nextID++, chapterModel.get_id()));
+                }
             }
 
             @Override
@@ -141,15 +157,15 @@ public class ChiTietChuyen extends AppCompatActivity {
 
             }
         });
-        SharedPreferences preferences1 = getApplicationContext().getSharedPreferences("User.txt",MODE_PRIVATE);
-        String idUser = preferences1.getString("_id","");
-        String fullname = preferences1.getString("fullname","");
+        SharedPreferences preferences1 = getApplicationContext().getSharedPreferences("User.txt", MODE_PRIVATE);
+        String idUser = preferences1.getString("_id", "");
+        String fullname = preferences1.getString("fullname", "");
         //click send
         img_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                BinhLuanModel model= new BinhLuanModel();
+                BinhLuanModel model = new BinhLuanModel();
                 model.setIdTruyen(idTruyen);
                 model.setIdUser(idUser);
                 model.setDate(time);
@@ -164,57 +180,82 @@ public class ChiTietChuyen extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<BinhLuanModel> call, Throwable t) {
-                        Toast.makeText(ChiTietChuyen.this, "add cmt failed !"+ t, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChiTietChuyen.this, "add cmt failed !" + t, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
         //thêm vào favorite
+        //lay listIDTruyenYeuthich
+        for (String item : listTruyenID) {
+            if (item.equals(idTruyen)) {
+                check = true;
+                Log.e("DataReceived", item);
+                break;
+            } else {
+                check = false;
+            }
+        }
+        if (check) {
+            btn_toggle.setChecked(true);
+        } else {
+            btn_toggle.setChecked(false);
+        }
+        SharedPreferences.Editor editor = preferences.edit();
         btn_toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     btn_toggle.setBackgroundResource(R.drawable.icon_favorite_on);
-                    FavoriteModel favoriteModel = new FavoriteModel();
-                    favoriteModel.setIdUser(idUser);
-                    //
-                    TruyenModel model = new TruyenModel();
-                    model.set_id(idTruyen);
-                    model.setNameTruyen(nameTruyen);
-                    model.setNameTacgia(nameTacgia);
-                    model.setNamXuatban(namXuatban);
-                    model.setAnhBia(anhBia);
-                    model.setTheLoai(theLoai);
-                    model.setMota(mota);
-                    favoriteModel.setTruyenModel(model);
-                    Log.i("tt",model.getNameTruyen());
-                    Call<Void> call3 = ytInterface.postYeuThich(favoriteModel);
+                    FavoriteModel model = new FavoriteModel();
+                    model.setIdUser(idUser);
+                    model.setTruyenModel(truyenModel);
+                    Toast.makeText(ChiTietChuyen.this, idTruyen, Toast.LENGTH_SHORT).show();
+                    Call<Void> call3 = ytInterface.postYeuThich(model);
                     call3.enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.isSuccessful()) {
                                 // Xử lý khi thành công
+                                check = true;
                                 Toast.makeText(ChiTietChuyen.this, "Đã thêm vào danh sách yêu thích", Toast.LENGTH_SHORT).show();
                             } else {
                                 // Xử lý khi có lỗi
                                 Toast.makeText(ChiTietChuyen.this, "Thêm vào danh sách yêu thích không thành công", Toast.LENGTH_SHORT).show();
-                                Log.e("yeuthichfailed","loi");
+                                Log.e("yeuthichfailed", "loi");
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(ChiTietChuyen.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
-                            Log.e("yeuthichfailed",t.toString());
+
                         }
                     });
-                }else {
-                    Toast.makeText(ChiTietChuyen.this, "khong yeuthich", Toast.LENGTH_SHORT).show();
+
+                } else {
                     btn_toggle.setBackgroundResource(R.drawable.icon_favorite_off);
+                    Call<Void> call4 = ytInterface.deleteYeuThich(idTruyen);
+                    call4.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(ChiTietChuyen.this, "Đã xóa khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                            } else {
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+
+                        }
+                    });
+                    editor.putBoolean("checked", false);
                 }
             }
         });
 
+        editor.apply();
     }
 
     private void anhxa() {
@@ -229,5 +270,15 @@ public class ChiTietChuyen extends AppCompatActivity {
         btn_toggle = findViewById(R.id.btn_toggle);
         cmtRecyclerView = findViewById(R.id.id_recyclerView_binhluan);
         chapRecyclerView = findViewById(R.id.id_recyclerView_chapters);
+    }
+
+
+    @Override
+    public void onDataReceived(List<String> stringList) {
+        if (stringList != null && !stringList.isEmpty()) {
+            listTruyenID = stringList;
+        } else {
+            Log.e("DataReceived", "Empty list");
+        }
     }
 }

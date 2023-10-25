@@ -63,7 +63,6 @@ public class AccountFragment extends Fragment {
         SharedPreferences preferences = getContext().getSharedPreferences("User.txt", Context.MODE_PRIVATE);
         String avatar = preferences.getString("avatar","");
         String url = MainActivity.mURL+"uploads/"+avatar;
-        Log.i("url",url);
         if (img_avatar!=null) {
             try {
                 Glide.with(getContext()).load(url).placeholder(R.drawable.logo).into(img_avatar);
@@ -76,7 +75,6 @@ public class AccountFragment extends Fragment {
 
         //get fullname
         String fullname = preferences.getString("fullname","");
-        Log.i("fullname",fullname);
         tv_name.setText(fullname);
 
         //chuyen trang infor

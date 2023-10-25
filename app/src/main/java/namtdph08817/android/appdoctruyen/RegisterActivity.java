@@ -3,6 +3,7 @@ package namtdph08817.android.appdoctruyen;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -72,7 +73,8 @@ public class RegisterActivity extends AppCompatActivity {
                         call.enqueue(new Callback<UserModel>() {
                             @Override
                             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-
+                                Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                                 Log.i("register : ",""+response);
                             }
 

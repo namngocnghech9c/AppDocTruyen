@@ -48,10 +48,13 @@ public class ChaptersAdapter extends RecyclerView.Adapter<ChaptersAdapter.CTView
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                SharedPreferences preferences = context.getSharedPreferences("Chap.txt",Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
                 if (mInterface != null) {
-                    mInterface.nextActivity(model);
+                    mInterface.nextActivity();
+                    editor.putInt("position",holder.getAdapterPosition());
                 }
+                editor.apply();
             }
         });
     }

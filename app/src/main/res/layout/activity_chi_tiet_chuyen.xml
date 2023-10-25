@@ -35,10 +35,13 @@
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
                 android:layout_alignParentRight="true"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:background="@drawable/toggle_selector"
-                android:textOn=""
                 android:textOff=""
-                android:layout_margin="@dimen/_10sdp"/>
+                android:textOn="" />
+
         </RelativeLayout>
 
 

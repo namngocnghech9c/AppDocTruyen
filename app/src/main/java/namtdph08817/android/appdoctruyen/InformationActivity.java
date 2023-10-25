@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,10 +19,12 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -29,7 +33,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import namtdph08817.android.appdoctruyen.mInterface.Image_Interface;
+import namtdph08817.android.appdoctruyen.mInterface.User_Interface;
 import namtdph08817.android.appdoctruyen.models.Image_Response;
+import namtdph08817.android.appdoctruyen.models.UserModel;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -46,6 +52,8 @@ public class InformationActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST_CODE = 1;
     private static final int PERMISSION_REQUEST_CODE = 1;
 //    private Image_Interface imgInterface;
+    private User_Interface user_interface;
+    private UserModel model = new UserModel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +61,98 @@ public class InformationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_information);
         anhxa();
 
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("User.txt",MODE_PRIVATE);
+        String id = preferences.getString("_id","");
+        String username = preferences.getString("username","");
+        String pass = preferences.getString("passwd","");
+        String avatar = preferences.getString("avatar","");
+        String fullname = preferences.getString("fullname","");
+        String email = preferences.getString("email","");
+        String sdt = preferences.getString("sdt","");
+        int vaitro = preferences.getInt("vaitro",0);
+
+
+        ed_fullname.setText(fullname);
+        ed_email.setText(email);
+        ed_sdt.setText(sdt);
+        ed_pass.setText("aksfgfea");
+        String url = APIClass.URL_1+"uploads/"+avatar;
+        if (imgAvatar!=null) {
+            try {
+                Glide.with(getApplicationContext()).load(url).placeholder(R.drawable.logo).into(imgAvatar);
+            } catch (Exception e) {
+                Log.e("loi", e.toString());
+            }
+        }else {
+            Log.i("img_avatar","null");
+        }
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(APIClass.URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        user_interface = retrofit.create(User_Interface.class);
+
         img_edit_pass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(InformationActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+                Dialog dialog = new Dialog(InformationActivity.this);
+                dialog.setContentView(R.layout.dialog_sua_mk);
+                EditText ed_newpass = dialog.findViewById(R.id.ed_new_pass);
+                EditText ed_re_newpass = dialog.findViewById(R.id.ed_re_newpass);
+                EditText ed_oldpass = dialog.findViewById(R.id.ed_old_pass);
+                Button btn_ok = dialog.findViewById(R.id.btn_ok_dialog);
+                Button btn_huy = dialog.findViewById(R.id.btn_cancel_dialog);
+
+                btn_ok.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(!ed_oldpass.getText().toString().equals(pass)){
+                            Toast.makeText(InformationActivity.this, "Mật khẩu cũ không đúng", Toast.LENGTH_SHORT).show();
+                        }else if(ed_newpass.getText().toString().equals("") || ed_re_newpass.getText().toString().equals("")){
+                            Toast.makeText(InformationActivity.this, "Không được để trống", Toast.LENGTH_SHORT).show();
+                        }else {
+                            if(ed_re_newpass.getText().toString().equals(ed_newpass.getText().toString())){
+                                model.setUsername(username);
+                                model.setVaitro(vaitro);
+                                model.set_id(id);
+                                model.setAvatar(avatar);
+                                model.setPasswd(ed_newpass.getText().toString());
+                                model.setSdt(sdt);
+                                model.setFullname(fullname);
+                                model.setEmail(email);
+                                Call<UserModel> call = user_interface.putUser(id,model);
+                                call.enqueue(new Callback<UserModel>() {
+                                    @Override
+                                    public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                                        if(response.isSuccessful()){
+                                            Toast.makeText(InformationActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        }else {
+                                            Toast.makeText(InformationActivity.this, "Đổi mật khẩu thất bại", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<UserModel> call, Throwable t) {
+                                        Log.e("failed change pass !!!",t.toString());
+                                    }
+                                });
+                            }else {
+                                Toast.makeText(InformationActivity.this, "Nhập lại mật khẩu mới không trùng khớp", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+
+                btn_huy.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         });
 

@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Không được để trống username và password", Toast.LENGTH_SHORT).show();
                 } else {
                     String user = "", pass = "", fullname = "", avatar="", sdt="", email ="", _id="";
+                    int vaitro = 0;
                     for (int i = 0; i < arrayList.size(); i++) {
                         UserModel model = arrayList.get(i);
 
@@ -95,6 +96,7 @@ public class LoginActivity extends AppCompatActivity {
                             _id = model.get_id();
                             sdt = model.getSdt();
                             email = model.getEmail();
+                            vaitro = model.getVaitro();
                         }
                     }
 
@@ -111,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString("email",email);
                             editor.putString("sdt",sdt);
                             editor.putString("_id",_id);
+                            editor.putInt("vaitro",vaitro);
                             editor.putBoolean("check_rmb",true);
 
                         }else {
